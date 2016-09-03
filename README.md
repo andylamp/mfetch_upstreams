@@ -14,7 +14,7 @@ position as I to perform these *three-damn-lines* dozens of times:
  just `master`. So for for example if you have a local branch named `tomato` it will 
  perform `git merge upstream/tomato`.
  
- ## What it needs from you
+## What it needs from you
  
  In order to perform that, it needs a list of directories that your projects you wish to track are located. Mine are
  as follows:
