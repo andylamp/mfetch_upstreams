@@ -74,7 +74,7 @@ fetch_and_merge() {
   # now fetch the remote
   git fetch upstream
   # now merge
-  git merge upstream/${branch}
+  git merge --no-edit upstream/${branch}
   # push back to git
   git push --q
   # now go back to parent dir
