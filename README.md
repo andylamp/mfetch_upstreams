@@ -28,6 +28,7 @@ position as I to perform these *three-damn-lines* dozens of times:
  )
  ```
  
- For clarity reasons I suggest you put one directory per line, the script will loop through all of them, no problem. Oh
- and finally it needs your credentials, typed only once as they are cached through `git`'s credential helper for 15
- minutes. That's it basically...
+ I also assume that you have set your original fork remote branch as `upstream` (you can verify that by using: 
+ `git remote -v` command). Additionally, for clarity reasons I suggest you put one directory per line, the script 
+ will loop through all of them, no problem. Oh and finally it needs your credentials, typed only once as they are 
+ cached through `git`'s credential helper for 15 minutes. That's it basically...

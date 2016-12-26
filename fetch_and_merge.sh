@@ -52,6 +52,7 @@ declare -a paths=(
   "$parent_dir/kafka"
   "$parent_dir/storm"
   "$parent_dir/ace"
+  "$parent_dir/snap"
 )
 
 ## check paths
