@@ -53,6 +53,7 @@ declare -a paths=(
   "$parent_dir/storm"
   "$parent_dir/ace"
   "$parent_dir/snap"
+  "$parent_dir/flink"
 )
 
 ## check paths
