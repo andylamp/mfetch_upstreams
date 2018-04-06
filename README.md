@@ -36,8 +36,8 @@ configured manually. Thankfully, this now happens automatically.
  
  ## Fresh clones
  
- When you first run the script you need to configure the `$my_user` and `repo_host_link`; due to github
- preference I assume the link structure will be of the following format:
+ When you first run the script you need to configure the `$my_user` and `$repo_host_link` -- please note 
+ that due to github preference I assume the link structure will be of the following format:
  
  ```
  repo_host_link/my_user/repo_name
