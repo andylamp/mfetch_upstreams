@@ -10,18 +10,20 @@
 #
 # Author: Andrew Grammenos (andreas.grammenos@gmail.com)
 #
-# License: GPLv3.
+# License: MIT.
 #
 
 ## globals
 hmsg="Script halted,"
-vmsg="Valid path in"
-smsg="Not valid, skipping path:"
+vmsg="Valid path in:"
+smsg="Not valid, cloning from remote to:"
 parent_dir="~/Desktop"
+repo_host_link="https://github.com"
+my_user="andylamp"
 current_dir="$(pwd)"
 
 ## beautiful and tidy way to expand tilde (~) by C. Duffy.
-expandPath() {
+expand_path() {
   case $1 in
     ~[+-]*)
       local content content_q
@@ -42,34 +44,37 @@ expandPath() {
 }
 
 ## now get the correct path
-parent_dir=$(expandPath $parent_dir)
+parent_dir=$(expand_path $parent_dir)
 
 ## here put your paths relative to the parent directory
 ## stored above that you want to keep track of; or
 ## other paths that are not relative to that one...
 declare -a paths=(
-  "$parent_dir/rust"
-  "$parent_dir/kafka"
-  "$parent_dir/storm"
-  "$parent_dir/ace"
-  "$parent_dir/snap"
-  "$parent_dir/snap-dev-64"
-  "$parent_dir/flink"
-  "$parent_dir/streaminer"
-  "$parent_dir/TuringLearnDraft.jl"
-  "$parent_dir/unlocker"
-  "$parent_dir/mxnet-the-straight-dope"
-  "$parent_dir/mxnet-slides"
-  "$parent_dir/vimrc"
-  "$parent_dir/SlideMenuControllerSwift"
-  "$parent_dir/linguist"
-  "$parent_dir/ouimeaux"
-  "$parent_dir/intellij-rust"
-  "$parent_dir/num"
+  "rust;rust-lang"
+  "num;rust-num"
+  "kafka;apache"
+  "storm;apache"
+  "ace;ajaxorg"
+  "snap;snap-stanford"
+  "snap-dev-64;snap-stanford"
+  "flink;apache"
+  "streaminer;mayconbordin"
+  "unlocker;DrDonk"
+  "mxnet-the-straight-dope;zackchase"
+  "mxnet-slides;zackchase"
+  "vimrc;amix"
+  "SlideMenuControllerSwift;dekatotoro"
+  "linguist;github"
+  "ouimeaux;iancmcc"
+  "intellij-rust;intellij-rust"
+  "uber-juno;JunoLab"
+  "TuringLearnDraft.jl;tlienart"
+  "AnalyticalEngine.jl;tlienart"
 )
 
 ## check paths
 check_path() {
+  echo "Probing path: $1"
   if [[ ! -d $1 ]]; then
     echo "$smsg $1";
     return 0
@@ -82,9 +87,20 @@ check_path() {
 ## get the current branch
 fetch_and_merge() {
   # get inside the directory
-  cd $1
+  cd $parent_dir/$1
+  # expand the remote link
+  plink="$repo_host_link/$2/$1"
   # get the git branch
   branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+  # check if we have an upstream, if not add the one
+  # on file
+  if [[ ! $(git remote -v) =~ .*upstream.*$plink.* ]]; then
+    echo "No valid remote present for: $1, adding: $plink"
+    git remote remove upstream
+    git remote add upstream $plink
+  else
+    echo "Valid remote present"
+  fi
   # now fetch the remote
   git fetch upstream
   # now merge
@@ -93,6 +109,32 @@ fetch_and_merge() {
   git push --q
   # now go back to parent dir
   cd $parent_dir
+}
+
+## get the repo store to that path and
+## register the upstream
+fetch_and_register() {
+  # ensure we are into the correct directory
+  cd $parent_dir
+  myrepolink="$repo_host_link/$my_user/$1"
+  remlink="$repo_host_link/$2/$1"
+  # try to clone
+  git clone $myrepolink
+  if [[ $? -ne 0 ]]; then
+    # could not clone
+    echo "Failed to clone repo from $myrepolink, skipping"
+    return
+  fi
+  echo "Cloned repo from $myrepolink to $parent_dir/$1"
+  # register remote
+  echo "Adding remote upstream to repo $1 with value $remlink"
+  # go to repo
+  cd $parent_dir/$1
+  # add the remote
+  git remote add upstream $remlink
+  echo "Repository $1 configured successfully!"
+  # finally fetch and merge
+  fetch_and_merge $1 $2
 }
 
 ## firstly though, just use the git credential helper
@@ -109,11 +151,19 @@ probe_paths() {
   set_git_cache
   # now loop through the array
   for p in "${paths[@]}"; do
+    p=(${p//;/ })
+    path="$parent_dir/${p[0]}"
+    repo=${p[0]}
+    powner=${p[1]}
+    #echo "Path $path, Remote $gh_link/$powner/$repo"
     # check the path
-    check_path $p
+    check_path $path
     if [[ $? = 1 ]]; then
-      fetch_and_merge $p
+      fetch_and_merge $repo $powner
+    else
+      fetch_and_register $repo $powner
     fi
+    echo ""
   done
   # after finishing, go back
   # to original directory
