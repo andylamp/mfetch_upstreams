@@ -100,7 +100,7 @@ fetch_and_merge() {
     git remote remove upstream
     git remote add upstream $plink
   else
-    echo "Valid remote present"
+    echo "Valid upstream present (set at: $plink)"
   fi
   # now fetch the remote
   git fetch upstream
@@ -153,12 +153,13 @@ set_git_cache() {
 probe_paths() {
   set_git_cache
   # now loop through the array
-  printf "Probing ${#paths[@]} repositories...\n"
+  printf "Probing ${#paths[@]} repositories...\n\n"
   for p in "${paths[@]}"; do
     p=(${p//;/ })
     path="$parent_dir/${p[0]}"
     repo=${p[0]}
     powner=${p[1]}
+    printf "Trying repository: $repo (original owner: $powner)\n"
     #echo "Path $path, Remote $gh_link/$powner/$repo"
     # check the path
     check_path $path
