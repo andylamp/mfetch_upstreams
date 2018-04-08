@@ -21,6 +21,7 @@ parent_dir="~/Desktop"
 repo_host_link="https://github.com"
 my_user="andylamp"
 current_dir="$(pwd)"
+let "cnt=0"
 
 ## beautiful and tidy way to expand tilde (~) by C. Duffy.
 expand_path() {
@@ -109,6 +110,8 @@ fetch_and_merge() {
   git push --q
   # now go back to parent dir
   cd $parent_dir
+  # increment counter
+  let "cnt++"
 }
 
 ## get the repo store to that path and
@@ -150,6 +153,7 @@ set_git_cache() {
 probe_paths() {
   set_git_cache
   # now loop through the array
+  printf "Probing ${#paths[@]} repositories...\n"
   for p in "${paths[@]}"; do
     p=(${p//;/ })
     path="$parent_dir/${p[0]}"
@@ -168,6 +172,7 @@ probe_paths() {
   # after finishing, go back
   # to original directory
   cd $current_dir
+  printf "All done, processed successfully $cnt out of ${#paths[@]} repositories\n"
 }
 
 ## now fire up the paths
