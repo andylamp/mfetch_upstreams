@@ -151,6 +151,7 @@ set_git_cache() {
 
 ## now fetch updates
 probe_paths() {
+  # enable git credential cache
   set_git_cache
   # now loop through the array
   printf "Probing ${#paths[@]} repositories...\n\n"
