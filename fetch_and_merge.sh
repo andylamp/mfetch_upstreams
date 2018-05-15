@@ -71,6 +71,10 @@ declare -a paths=(
   "uber-juno;JunoLab"
   "TuringLearnDraft.jl;tlienart"
   "AnalyticalEngine.jl;tlienart"
+  "Format-Preserving-Encryption;0NG"
+  "dotfiles;andylamp"
+  "wmsketch;stanford-futuredata"
+  "tsfresh;blue-yonder"
 )
 
 ## check paths
