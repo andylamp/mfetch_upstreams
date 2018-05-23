@@ -75,6 +75,8 @@ declare -a paths=(
   "dotfiles;andylamp"
   "wmsketch;stanford-futuredata"
   "tsfresh;blue-yonder"
+  "fmtl;gingsmith"
+  "buddy-malloc;evanw"
 )
 
 ## check paths
