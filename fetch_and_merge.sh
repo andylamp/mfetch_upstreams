@@ -72,11 +72,27 @@ declare -a paths=(
   "TuringLearnDraft.jl;tlienart"
   "AnalyticalEngine.jl;tlienart"
   "Format-Preserving-Encryption;0NG"
-  "dotfiles;andylamp"
   "wmsketch;stanford-futuredata"
   "tsfresh;blue-yonder"
   "fmtl;gingsmith"
   "buddy-malloc;evanw"
+  "cyclades;amplab"
+  "rbuild;akritid"
+  "api-compiler;googleapis"
+  "lean-julia-the-hard-way;chrisvoncsefalvay"
+  "Gdbinit;gdbinit"
+  "acmart;borisveytsman"
+  # my repos
+  "fetch_my_key;andylamp"
+  "dotfiles;andylamp"
+  "bg_run;andylamp"
+  "c89_parser;andylamp"
+  "BPlusTree;andylamp"
+  "linhash;andylamp"
+  "hashy_table;andylamp"
+  "csv_to_csvs;andylamp"
+  "c-various;andylamp"
+  "c-primitives;andylamp"
 )
 
 ## check paths
