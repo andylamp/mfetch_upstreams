@@ -79,7 +79,7 @@ declare -a paths=(
   "cyclades;amplab"
   "rbuild;akritid"
   "api-compiler;googleapis"
-  "lean-julia-the-hard-way;chrisvoncsefalvay"
+  "learn-julia-the-hard-way;chrisvoncsefalvay"
   "Gdbinit;gdbinit"
   "acmart;borisveytsman"
   # my repos
