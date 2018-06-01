@@ -9,21 +9,23 @@ been in the same tedious position as I to perform these *three-damn-lines* dozen
  git push
  ```
  
-I got really tired of it, so I made a script about it... Let's talk first about what it does. 
-This script takes care all of the hassle involved with that repetitive process while also taking 
-care to merge the *correct* branch and not just `master`. So for for example if you have a local 
-branch named `tomato` it will perform `git merge upstream/tomato`.
+I got really tired of it, so I made a batch script about it... but let's start by explainining
+what it *actually* does. This script is meant to take care all of the hassle involved with the
+aforementioned repetitive process while also merging the *correct* branch and not just 
+`master`. Concretely, let us assume that you have a local branch named `tomato` then it be 
+smart enough to perform `git merge upstream/tomato`.
 
-Additionally, for clarity reasons when configuring the script I suggest you put one directory per 
-line as the script will loop through all of them, no problem. Oh, and finally it needs your 
-credentials, typed only once as they are cached through `git`'s credential helper for 15 minutes. 
+Additionally, for clarity reasons, when configuring the script I suggest you put one directory per 
+line as the script will loop through all of them -- no problem. Oh, and finally it needs your 
+credentials, typed only once as they are cached through `git`'s credential helper for 15 
+minutes (in Linux distros & Windows); MacOS users will enjoy the joy of having `keychain`. 
  
 ## What it needs from you
  
-This version is a little bit more sophisticated, so it needs one more information when entering the 
-repo -- it's `upstream` repo link. This can be handy for example if you just cloned a repository which
-does not have a current `upmstream` branch an din the previous version had to be both cloned and
-configured manually. Thankfully, this now happens automatically.
+This version (v2) is a little bit more sophisticated, but to do this now it needs one more bit of extra 
+information when entering the repo -- it's `upstream` repo link. This can be handy for example if you 
+just `clone`d a repository which does not have a current `upstream` branch; this was a pain as it 
+had to be done (once) for each repository... but now fear not, it's been taken care of! 
  
  ```sh
  declare -a paths=(
@@ -37,16 +39,16 @@ configured manually. Thankfully, this now happens automatically.
  ## Fresh clones
  
  When you first run the script you need to configure the `$my_user` and `$repo_host_link` -- please note 
- that due to github preference I assume the link structure will be of the following format:
+ that due (my) github preference I assume the link structure will be of the following format:
  
  ```
  repo_host_link/my_user/repo_name
  ```
  
- If you are using github, this will not be a major pain but if you are using another service you may
- need to adjust the links slightly. Other than that, this should be plug an play, it will fork the repo
- from *your* remote fork, setup the upstream to the original repository and perform a merge in order
- to update it as well.
+ If you are using github, this will not be a major pain but if you are using another service 
+ (e.g. GitLab, BitBucket) you may need to adjust the links slightly. Other than that, this should 
+ be a plug an play afair; it will fork the repo from *your* remote fork, setup the `upstream` to 
+ the original repository and perform a merge in order to update it as well.
  
  ## Existing clones
  
