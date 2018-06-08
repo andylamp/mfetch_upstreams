@@ -93,6 +93,7 @@ declare -a paths=(
   "csv_to_csvs;andylamp"
   "c-various;andylamp"
   "c-primitives;andylamp"
+  "moses;andylamp"
 )
 
 ## check paths
