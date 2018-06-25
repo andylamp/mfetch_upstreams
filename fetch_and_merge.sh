@@ -94,6 +94,7 @@ declare -a paths=(
   "c-various;andylamp"
   "c-primitives;andylamp"
   "moses;andylamp"
+  "mfetch_upstreams;andylamp"
 )
 
 ## check paths
