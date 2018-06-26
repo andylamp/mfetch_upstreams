@@ -82,7 +82,7 @@ declare -a paths=(
   "learn-julia-the-hard-way;chrisvoncsefalvay"
   "Gdbinit;gdbinit"
   "acmart;borisveytsman"
-  "tlsf;mattconte"
+  "tlsf;akritid"
   # my repos
   "fetch_my_key;andylamp"
   "dotfiles;andylamp"
