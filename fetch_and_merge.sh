@@ -83,6 +83,7 @@ declare -a paths=(
   "Gdbinit;gdbinit"
   "acmart;borisveytsman"
   "tlsf;akritid"
+  "AzurePublicDataset;Azure"
   # my repos
   "fetch_my_key;andylamp"
   "dotfiles;andylamp"
