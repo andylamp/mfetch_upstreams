@@ -128,6 +128,8 @@ fetch_and_merge() {
   else
     echo "Valid upstream present (set at: $plink)"
   fi
+  # pull changes first
+  git pull
   # now fetch the remote
   git fetch upstream
   # now merge
