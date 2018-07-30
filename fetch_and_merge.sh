@@ -129,8 +129,10 @@ fetch_and_merge() {
     echo "Valid upstream present (set at: $plink)"
   fi
   # pull changes first
+  echo "Pulling latest changes from repo"
   git pull
   # now fetch the remote
+  echo "Fetching upstream"
   git fetch upstream
   # now merge
   git merge --no-edit upstream/${branch}
