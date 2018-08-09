@@ -84,6 +84,7 @@ declare -a paths=(
   "acmart;borisveytsman"
   "tlsf;akritid"
   "AzurePublicDataset;Azure"
+  "lsds;sgx-lkl"
   # my repos
   "fetch_my_key;andylamp"
   "dotfiles;andylamp"
