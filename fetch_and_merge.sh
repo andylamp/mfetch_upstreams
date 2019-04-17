@@ -86,6 +86,8 @@ declare -a paths=(
   "AzurePublicDataset;Azure"
   "sgx-lkl;lsds"
   "MLJ.jl;alan-turing-institute"
+  "d2l-en;d2l-ai"
+  "xkcd-font;ipython"
   # my repos
   "fetch_my_key;andylamp"
   "dotfiles;andylamp"
