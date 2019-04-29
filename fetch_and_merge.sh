@@ -88,6 +88,7 @@ declare -a paths=(
   "MLJ.jl;alan-turing-institute"
   "d2l-en;d2l-ai"
   "xkcd-font;ipython"
+  "OpenPH:rodrgo"
   # my repos
   "fetch_my_key;andylamp"
   "dotfiles;andylamp"
