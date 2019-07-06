@@ -89,6 +89,7 @@ declare -a paths=(
   "d2l-en;d2l-ai"
   "xkcd-font;ipython"
   "OpenPH;rodrgo"
+  "PosteriorServer;BigBayes"
   # my repos
   "fetch_my_key;andylamp"
   "dotfiles;andylamp"
