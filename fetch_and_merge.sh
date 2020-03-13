@@ -13,14 +13,28 @@
 # License: MIT.
 #
 
+# pretty functions for log output
+function cli_info { echo -e " -- \033[1;32m$1\033[0m" ; }
+function cli_warning { echo -e " ** \033[1;33m$1\033[0m" ; }
+function cli_error { echo -e " !! \033[1;31m$1\033[0m" ; }
+
 ## globals
-hmsg="Script halted,"
 vmsg="Valid path in:"
 smsg="Not valid, cloning from remote to:"
-parent_dir="~/Desktop"
+
+# headless
+headless_dir="~/repos"
+# non-headless (desktop mode)
+desktop_dir="~/Desktop"
+
+# github related
 repo_host_link="https://github.com"
 my_user="andylamp"
+
+# current path
 current_dir="$(pwd)"
+
+# counter for processed entries
 let "cnt=0"
 
 ## beautiful and tidy way to expand tilde (~) by C. Duffy.
@@ -30,13 +44,13 @@ expand_path() {
       local content content_q
       printf -v content_q '%q' "${1:2}"
       eval "content=${1:0:2}${content_q}"
-      printf '%s\n' "$content"
+      printf '%s\n' "${content}"
       ;;
     ~*)
       local content content_q
       printf -v content_q '%q' "${1:1}"
       eval "content=~${content_q}"
-      printf '%s\n' "$content"
+      printf '%s\n' "${content}"
       ;;
     *)
       printf '%s\n' "$1"
@@ -45,7 +59,19 @@ expand_path() {
 }
 
 ## now get the correct path
-parent_dir=$(expand_path $parent_dir)
+t_desktop_dir=$(expand_path ${desktop_dir})
+t_headless_dir=$(expand_path ${headless_dir})
+
+# check if the Desktop directory exists
+if [[ ! -d ${t_desktop_dir} ]]; then
+    cli_info "Desktop directory appears to be missing - assuming headless mode."
+    parent_dir=${t_headless_dir}
+else
+    cli_info "Desktop directory appears to be present - assuming desktop mode."
+    parent_dir=${t_desktop_dir}
+fi
+cli_info "\tUsing: ${parent_dir}."
+
 
 ## here put your paths relative to the parent directory
 ## stored above that you want to keep track of; or
@@ -107,12 +133,12 @@ declare -a paths=(
 
 ## check paths
 check_path() {
-  echo "Probing path: $1"
-  if [[ ! -d $1 ]]; then
-    echo "$smsg $1";
+  cli_info "Probing path: ${1}"
+  if [[ ! -d ${1} ]]; then
+    cli_info "${smsg} ${1}";
     return 0
   else
-    echo "$vmsg $1";
+    cli_info "${vmsg} ${1}";
     return 1
   fi
 }
@@ -120,32 +146,32 @@ check_path() {
 ## get the current branch
 fetch_and_merge() {
   # get inside the directory
-  cd $parent_dir/$1
+  cd ${parent_dir}/${1}
   # expand the remote link
-  plink="$repo_host_link/$2/$1"
+  plink="${repo_host_link}/${2}/${1}"
   # get the git branch
   branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
   # check if we have an upstream, if not add the one
   # on file
-  if [[ ! $(git remote -v) =~ .*upstream.*$plink.* ]]; then
-    echo "No valid remote present for: $1, adding: $plink"
+  if [[ ! $(git remote -v) =~ .*upstream.*${plink}.* ]]; then
+    cli_warning "No valid remote present for: ${1}, adding: ${plink}"
     git remote remove upstream
-    git remote add upstream $plink
+    git remote add upstream ${plink}
   else
-    echo "Valid upstream present (set at: $plink)"
+    cli_info "Valid upstream present (set at: ${plink})"
   fi
   # pull changes first
-  echo "Pulling latest changes from repo"
+  cli_info "Pulling latest changes from repo"
   git pull
   # now fetch the remote
-  echo "Fetching upstream"
+  cli_info "Fetching upstream"
   git fetch upstream
   # now merge
   git merge --no-edit upstream/${branch}
   # push back to git
   git push --q
   # now go back to parent dir
-  cd $parent_dir
+  cd ${parent_dir}
   # increment counter
   let "cnt++"
 }
@@ -154,26 +180,26 @@ fetch_and_merge() {
 ## register the upstream
 fetch_and_register() {
   # ensure we are into the correct directory
-  cd $parent_dir
-  myrepolink="$repo_host_link/$my_user/$1"
-  remlink="$repo_host_link/$2/$1"
+  cd ${parent_dir}
+  myrepolink="${repo_host_link}/${my_user}/${1}"
+  remlink="${repo_host_link}/${2}/${1}"
   # try to clone
-  git clone $myrepolink
-  if [[ $? -ne 0 ]]; then
+  git clone ${myrepolink}
+  if [[ ${?} -ne 0 ]]; then
     # could not clone
-    echo "Failed to clone repo from $myrepolink, skipping"
+    cli_error "Failed to clone repo from ${myrepolink}, skipping"
     return
   fi
-  echo "Cloned repo from $myrepolink to $parent_dir/$1"
+  cli_info "Cloned repo from ${myrepolink} to ${parent_dir}/${1}"
   # register remote
-  echo "Adding remote upstream to repo $1 with value $remlink"
+  cli_info "Adding remote upstream to repo $1 with value ${remlink}"
   # go to repo
-  cd $parent_dir/$1
+  cd ${parent_dir}/${1}
   # add the remote
-  git remote add upstream $remlink
-  echo "Repository $1 configured successfully!"
+  git remote add upstream ${remlink}
+  cli_info "Repository ${1} configured successfully!"
   # finally fetch and merge
-  fetch_and_merge $1 $2
+  fetch_and_merge ${1} ${2}
 }
 
 ## firstly though, just use the git credential helper
@@ -190,27 +216,26 @@ probe_paths() {
   # enable git credential cache
   set_git_cache
   # now loop through the array
-  printf "Probing ${#paths[@]} repositories...\n\n"
+  cli_info "Probing ${#paths[@]} repositories...\n\n"
   for p in "${paths[@]}"; do
     p=(${p//;/ })
     path="$parent_dir/${p[0]}"
     repo=${p[0]}
     powner=${p[1]}
-    printf "Trying repository: $repo (original owner: $powner)\n"
-    #echo "Path $path, Remote $gh_link/$powner/$repo"
+    cli_info "Trying repository: ${repo} (original owner: ${powner})\n"
     # check the path
-    check_path $path
-    if [[ $? = 1 ]]; then
-      fetch_and_merge $repo $powner
+    check_path ${path}
+    if [[ ${?} = 1 ]]; then
+      fetch_and_merge ${repo} ${powner}
     else
-      fetch_and_register $repo $powner
+      fetch_and_register ${repo} ${powner}
     fi
     echo ""
   done
   # after finishing, go back
   # to original directory
-  cd $current_dir
-  printf "All done, processed successfully $cnt out of ${#paths[@]} repositories\n"
+  cd ${current_dir}
+  cli_info "All done, processed successfully ${cnt} out of ${#paths[@]} repositories\n"
 }
 
 ## now fire up the paths
