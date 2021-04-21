@@ -116,6 +116,7 @@ declare -a paths=(
   "xkcd-font;ipython"
   "OpenPH;rodrgo"
   "PosteriorServer;BigBayes"
+  "kubernetes;kubernetes"
   # my repos
   "fetch_my_key;andylamp"
   "dotfiles;andylamp"
