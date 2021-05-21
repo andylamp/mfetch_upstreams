@@ -23,9 +23,9 @@ vmsg="Valid path in:"
 smsg="Not valid, cloning from remote to:"
 
 # headless
-headless_dir="~/repos"
+headless_dir="${HOME}/repos"
 # non-headless (desktop mode)
-desktop_dir="~/Desktop"
+desktop_dir="${HOME}/Desktop"
 
 # github related
 repo_host_link="https://github.com"
@@ -35,7 +35,7 @@ my_user="andylamp"
 current_dir="$(pwd)"
 
 # counter for processed entries
-let "cnt=0"
+(( cnt=0 ))
 
 ## beautiful and tidy way to expand tilde (~) by C. Duffy.
 expand_path() {
@@ -59,8 +59,8 @@ expand_path() {
 }
 
 ## now get the correct path
-t_desktop_dir=$(expand_path ${desktop_dir})
-t_headless_dir=$(expand_path ${headless_dir})
+t_desktop_dir=$(expand_path "${desktop_dir}")
+t_headless_dir=$(expand_path "${headless_dir}")
 
 # check if the Desktop directory exists
 if [[ ! -d ${t_desktop_dir} ]]; then
@@ -117,6 +117,7 @@ declare -a paths=(
   "OpenPH;rodrgo"
   "PosteriorServer;BigBayes"
   "kubernetes;kubernetes"
+  "hypothesis-jsonschema;Zac-HD"
   # my repos
   "fetch_my_key;andylamp"
   "dotfiles;andylamp"
@@ -147,7 +148,7 @@ check_path() {
 ## get the current branch
 fetch_and_merge() {
   # get inside the directory
-  cd ${parent_dir}/${1}
+  cd "${parent_dir}/${1}" || return
   # expand the remote link
   plink="${repo_host_link}/${2}/${1}"
   # get the git branch
@@ -157,7 +158,7 @@ fetch_and_merge() {
   if [[ ! $(git remote -v) =~ .*upstream.*${plink}.* ]]; then
     cli_warning "No valid remote present for: ${1}, adding: ${plink}"
     git remote remove upstream
-    git remote add upstream ${plink}
+    git remote add upstream "${plink}"
   else
     cli_info "Valid upstream present (set at: ${plink})"
   fi
@@ -168,39 +169,39 @@ fetch_and_merge() {
   cli_info "Fetching upstream"
   git fetch upstream
   # now merge
-  git merge --no-edit upstream/${branch}
+  git merge --no-edit upstream/"${branch}"
   # push back to git
   git push --q
   # now go back to parent dir
-  cd ${parent_dir}
+  cd "${parent_dir}" || return
   # increment counter
-  let "cnt++"
+  (( cnt++ ))
 }
 
 ## get the repo store to that path and
 ## register the upstream
 fetch_and_register() {
   # ensure we are into the correct directory
-  cd ${parent_dir}
-  myrepolink="${repo_host_link}/${my_user}/${1}"
-  remlink="${repo_host_link}/${2}/${1}"
+  cd "${parent_dir}" || return
+  my_repo_link="${repo_host_link}/${my_user}/${1}"
+  rem_link="${repo_host_link}/${2}/${1}"
   # try to clone
-  git clone ${myrepolink}
-  if [[ ${?} -ne 0 ]]; then
+
+  if ! git clone "${my_repo_link}"; then
     # could not clone
-    cli_error "Failed to clone repo from ${myrepolink}, skipping"
+    cli_error "Failed to clone repo from ${my_repo_link}, skipping"
     return
   fi
-  cli_info "Cloned repo from ${myrepolink} to ${parent_dir}/${1}"
+  cli_info "Cloned repo from ${my_repo_link} to ${parent_dir}/${1}"
   # register remote
-  cli_info "Adding remote upstream to repo $1 with value ${remlink}"
+  cli_info "Adding remote upstream to repo $1 with value ${rem_link}"
   # go to repo
-  cd ${parent_dir}/${1}
+  cd "${parent_dir}/${1}" || return
   # add the remote
-  git remote add upstream ${remlink}
+  git remote add upstream "${rem_link}"
   cli_info "Repository ${1} configured successfully!"
   # finally fetch and merge
-  fetch_and_merge ${1} ${2}
+  fetch_and_merge "${1}" "${2}"
 }
 
 ## firstly though, just use the git credential helper
@@ -219,23 +220,24 @@ probe_paths() {
   # now loop through the array
   cli_info "Probing ${#paths[@]} repositories...\n\n"
   for p in "${paths[@]}"; do
+    # shellcheck disable=SC2206
     p=(${p//;/ })
     path="$parent_dir/${p[0]}"
     repo=${p[0]}
-    powner=${p[1]}
-    cli_info "Trying repository: ${repo} (original owner: ${powner})\n"
+    parent_owner=${p[1]}
+    cli_info "Trying repository: ${repo} (original owner: ${parent_owner})\n"
     # check the path
-    check_path ${path}
+    check_path "${path}"
     if [[ ${?} = 1 ]]; then
-      fetch_and_merge ${repo} ${powner}
+      fetch_and_merge "${repo}" "${parent_owner}"
     else
-      fetch_and_register ${repo} ${powner}
+      fetch_and_register "${repo}" "${parent_owner}"
     fi
     echo ""
   done
   # after finishing, go back
   # to original directory
-  cd ${current_dir}
+  cd "${current_dir}" || return
   cli_info "All done, processed successfully ${cnt} out of ${#paths[@]} repositories\n"
 }
 
